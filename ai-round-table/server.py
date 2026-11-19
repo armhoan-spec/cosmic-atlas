@@ -9,6 +9,24 @@ import urllib.request
 from typing import Any
 
 DEFAULT_SEQUENCE = ["anthropic", "openai", "gemini", "deepseek"]
+
+
+def _load_dotenv() -> None:
+    path = os.path.join(os.path.dirname(__file__), ".env")
+    if not os.path.isfile(path):
+        return
+    with open(path, encoding="utf-8") as handle:
+        for raw in handle:
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key, value = key.strip(), value.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
+
+
+_load_dotenv()
 SYSTEM = (
     "You are one specialist in a multi-agent workflow. Work only on the assigned stage. "
     "Be precise, state assumptions, identify risks, and provide actionable output. "
